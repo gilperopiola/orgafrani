@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout, Modal, Input, InputNumber, Icon, List, DatePicker, Switch } from 'antd';
+import { Modal, Input, Icon } from 'antd';
 
 const INITIAL_STATE = {
     name: "",

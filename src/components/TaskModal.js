@@ -1,9 +1,9 @@
 import React from 'react'
-import { Layout, Modal, Input, InputNumber, Icon, List, DatePicker, Switch } from 'antd';
+import { Modal, Input, InputNumber, Icon, DatePicker, Switch } from 'antd';
+import moment from 'moment'
 
 const INITIAL_STATE = {
     name: "",
-    spentHours: 0,
     estimatedHours: 0.25,
     dueDate: null,
     important: false,
@@ -15,8 +15,19 @@ class TaskModal extends React.Component {
         this.state = INITIAL_STATE
     }
 
+    componentWillReceiveProps = (props) => {
+        if (props.defaultValues !== undefined && props.defaultValues !== {} && props.defaultValues !== null) {
+            this.setState({
+                name: props.defaultValues.name,
+                estimatedHours: props.defaultValues.estimatedHours,
+                dueDate: props.defaultValues.dueDate,
+                important: props.defaultValues.important
+            })
+        }
+    }
+
     handleOk = () => {
-        this.props.onOk(this.props.projectName, this.state.name, this.state.spentHours, this.state.estimatedHours, this.state.dueDate, this.state.important)
+        this.props.onOk(this.state.name, this.state.estimatedHours, this.state.dueDate, this.state.important)
         this.resetValues()
     }
 
@@ -28,7 +39,6 @@ class TaskModal extends React.Component {
     resetValues = () => {
         this.setState({
             name: "",
-            spentHours: 0,
             estimatedHours: 0.25,
             dueDate: null,
             important: false,
@@ -38,7 +48,6 @@ class TaskModal extends React.Component {
     handleNameChange = (e) => {
         this.setState({
             name: e.target.value,
-            spentHours: this.state.spentHours,
             estimatedHours: this.state.estimatedHours,
             dueDate: this.state.dueDate,
             important: this.state.important
@@ -48,7 +57,6 @@ class TaskModal extends React.Component {
     handleEstimatedHoursChange = (value) => {
         this.setState({
             name: this.state.name,
-            spentHours: this.state.spentHours,
             estimatedHours: value,
             dueDate: this.state.dueDate,
             important: this.state.important
@@ -58,7 +66,6 @@ class TaskModal extends React.Component {
     handleDueDateChange = (date) => {
         this.setState({
             name: this.state.name,
-            spentHours: this.state.spentHours,
             estimatedHours: this.state.estimatedHours,
             dueDate: date,
             important: this.state.important
@@ -68,7 +75,6 @@ class TaskModal extends React.Component {
     handleImportantChange = (enabled) => {
         this.setState({
             name: this.state.name,
-            spentHours: this.state.spentHours,
             estimatedHours: this.state.estimatedHours,
             dueDate: this.state.dueDate,
             important: enabled
@@ -104,7 +110,7 @@ class TaskModal extends React.Component {
                 <DatePicker
                     placeholder={"Due Date"}
                     onChange={this.handleDueDateChange}
-                    value={this.state.dueDate}
+                    value={this.state.dueDate !== null ? moment(this.state.dueDate) : null}
                     style={{ display: "block", marginBottom: "12px" }}
                 />
 

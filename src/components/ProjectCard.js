@@ -1,13 +1,17 @@
 import React from 'react'
-import { Layout, Modal, Input, InputNumber, Icon, List, DatePicker, Switch, Typography } from 'antd';
+import { Icon, List, Typography } from 'antd';
 import moment from 'moment'
-import NewProjectModal from './ProjectModal'
+import ProjectModal from './ProjectModal'
+import TaskModal from './TaskModal'
+
 
 const { Text } = Typography;
 
 
 const INITIAL_STATE = {
     editProjectModalOpen: false,
+    editTaskModalOpen: false,
+    selectedTask: {},
 }
 
 class ProjectCard extends React.Component {
@@ -21,6 +25,12 @@ class ProjectCard extends React.Component {
         this.handleEditProjectModal(false)
     }
 
+    editTask = (name, estimatedHours, dueDate, important) => {
+        this.props.editTask(this.state.selectedTask, name, estimatedHours, dueDate, important)
+        this.handleEditTaskModal(false, { name: "", estimatedHours: 0.25, dueDate: null, important: false })
+    }
+
+    // #region Helper Functions
     dueDateWarning = (task) => {
         return (moment().diff(task.dueDate, 'days') > -1)
     }
@@ -63,7 +73,21 @@ class ProjectCard extends React.Component {
         })
     }
 
+    handleEditTaskModal = (open, task) => {
+        this.setState({
+            editTaskModalOpen: open,
+            selectedTask: task,
+        })
+    }
+
+    // #endregion
+
     render() {
+
+        for (let i = 0; i < this.props.project.tasks.length; i++) {
+            console.log(this.props.project.tasks[i])
+        }
+
         return (
             <div
                 data-simplebar
@@ -111,7 +135,7 @@ class ProjectCard extends React.Component {
                                 />
                             }
 
-                            {task.name.substring(0, 28)}
+                            <Text style={{ color: task.important ? "#ffeb00" : "white" }} onClick={() => this.handleEditTaskModal(true, task)}>{task.name.substring(0, 28)}</Text>
                             <div style={{ float: "right" }}>
                                 {task.estimatedHours}hs
                             <Icon
@@ -155,13 +179,23 @@ class ProjectCard extends React.Component {
                     }
 
                 />
-                <NewProjectModal
+                <ProjectModal
                     title={"Edit Project"}
                     visible={this.state.editProjectModalOpen}
                     onOk={this.editProject}
                     onCancel={this.handleEditProjectModal}
                     defaultName={this.props.project.name}
                 />
+
+                <TaskModal
+                    title={"Edit Task"}
+                    visible={this.state.editTaskModalOpen}
+                    onOk={this.editTask}
+                    onCancel={this.handleEditTaskModal}
+
+                    defaultValues={this.state.selectedTask ? this.state.selectedTask : null}
+                />
+
             </div>
         )
     }

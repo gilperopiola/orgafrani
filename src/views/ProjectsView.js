@@ -65,7 +65,7 @@ class ProjectsView extends React.Component {
         this.save();
     }
 
-    createTask = (projectName, name, spentHours, estimatedHours, dueDate, important) => {
+    createTask = (projectName, name, estimatedHours, dueDate, important) => {
         let projects = this.state.projects
 
         for (let i = 0; i < projects.length; i++) {
@@ -73,7 +73,6 @@ class ProjectsView extends React.Component {
                 projects[i].tasks.push({
                     projectName: projectName,
                     name: name,
-                    spentHours: spentHours,
                     estimatedHours: estimatedHours,
                     dueDate: dueDate,
                     important: important
@@ -84,6 +83,32 @@ class ProjectsView extends React.Component {
 
         this.setState({ projects: projects });
         this.handleNewTaskModal(false);
+        this.save();
+    }
+
+    editTask = (task, name, estimatedHours, dueDate, important) => {
+        let projects = this.state.projects
+        for (let i = 0; i < projects.length; i++) {
+            if (projects[i].name === task.projectName) {
+                for (let j = 0; j < projects[i].tasks.length; j++) {
+                    if (projects[i].tasks[j].name === task.name) {
+                        projects[i].tasks[j].name = name
+                        projects[i].tasks[j].estimatedHours = estimatedHours
+                        projects[i].tasks[j].dueDate = dueDate
+                        projects[i].tasks[j].important = important
+                        console.log("EEEE")
+                        console.log(name)
+                        console.log(estimatedHours)
+                        console.log(dueDate)
+                        console.log(important)
+                        console.log(projects[i].tasks[j])
+                        break
+                    }
+                }
+            }
+        }
+
+        this.setState({ projects: projects });
         this.save();
     }
 
@@ -202,13 +227,14 @@ class ProjectsView extends React.Component {
     renderProjects = () => {
         return (
             this.state.projects.map((project, i) => (
-                <ProjectCard project={project}
+                <ProjectCard key={i} project={project}
                     handleNewTaskModal={this.handleNewTaskModal}
                     editProject={this.editProject}
                     moveProject={this.moveProject}
                     deleteProject={this.deleteProject}
-                    deleteTask={this.deleteTask}
                     finishTask={this.finishTask}
+                    editTask={this.editTask}
+                    deleteTask={this.deleteTask}
                 />
             ))
         )
