@@ -1,6 +1,24 @@
+@import '~antd/dist/antd.css';
+
+#root {
+  height: 100%;
+}
+
 .App {
   text-align: center;
 }
+
+.ant-layout {
+  background-color: #621dd0;
+  height: 100%;
+  padding: 12px 12px;
+}
+
+.ant-empty-description {
+  color: white;
+}
+
+/* --------------------- */
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
@@ -31,3 +49,4 @@
     transform: rotate(360deg);
   }
 }
+
