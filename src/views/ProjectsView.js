@@ -1,30 +1,21 @@
 import React from 'react'
-import { Layout, Modal, Input, InputNumber, Icon, List, DatePicker, Switch } from 'antd';
+import { Layout } from 'antd';
 import KeyboardEventHandler from 'react-keyboard-event-handler';
-import moment from 'moment';
 import 'simplebar';
 import 'simplebar/dist/simplebar.css';
 
+import ProjectModal from '../components/ProjectModal'
+import TaskModal from '../components/TaskModal'
+import ProjectCard from '../components/ProjectCard'
 
 const { Content } = Layout;
 
 const INITIAL_STATE = {
     projects: [],
 
-    newProject: {
-        modalOpen: false,
-        name: "",
-    },
-
-    newTask: {
-        modalOpen: false,
-        projectName: "",
-        name: "",
-        spentHours: 0,
-        estimatedHours: 0.25,
-        dueDate: null,
-        important: false,
-    }
+    newProjectModalOpen: false,
+    newTaskModalOpen: false,
+    newTaskProjectName: "",
 }
 
 class ProjectsView extends React.Component {
@@ -37,28 +28,55 @@ class ProjectsView extends React.Component {
         this.load()
     }
 
-    // #region Main Functions
-    createProject = () => {
+    // #region Internal Data Management
+    createProject = (name) => {
         let projects = this.state.projects
-        projects.push({ name: this.state.newProject.name, tasks: [], finishedTasks: [], archivedTasks: [] })
+        projects.push({ name: name, tasks: [], finishedTasks: [], archivedTasks: [] })
         this.setState({ projects: projects });
         this.handleNewProjectModal(false);
         this.save();
     }
 
-    createTask = () => {
+    editProject = (project, name) => {
         let projects = this.state.projects
-        let newTask = this.state.newTask;
+        for (let i = 0; i < projects.length; i++) {
+            if (projects[i].name === project.name) {
+                projects[i].name = name
+                break
+            }
+        }
+
+        this.setState({ projects: projects });
+        this.save();
+    }
+
+    moveProject = (project, swapIndex) => {
+        let projects = this.state.projects
+        for (let i = 0; i < projects.length; i++) {
+            if (projects[i].name === project.name) {
+                let temp = projects[i]
+                projects[i] = projects[i + swapIndex]
+                projects[i + swapIndex] = temp
+                break
+            }
+        }
+
+        this.setState({ projects: projects });
+        this.save();
+    }
+
+    createTask = (projectName, name, spentHours, estimatedHours, dueDate, important) => {
+        let projects = this.state.projects
 
         for (let i = 0; i < projects.length; i++) {
-            if (projects[i].name === newTask.projectName) {
+            if (projects[i].name === projectName) {
                 projects[i].tasks.push({
-                    name: newTask.name,
-                    projectName: newTask.projectName,
-                    spentHours: newTask.spentHours,
-                    estimatedHours: newTask.estimatedHours,
-                    dueDate: newTask.dueDate,
-                    important: newTask.important
+                    projectName: projectName,
+                    name: name,
+                    spentHours: spentHours,
+                    estimatedHours: estimatedHours,
+                    dueDate: dueDate,
+                    important: important
                 })
                 break;
             }
@@ -134,81 +152,20 @@ class ProjectsView extends React.Component {
 
     // #endregion
 
-    // #region Handlers
-
+    // #region Modal Handlers
 
     handleNewProjectModal = (open) => {
         this.setState({
-            newProject: { modalOpen: open, name: "" },
-            newTask: { modalOpen: false, projectName: "", name: "", spentHours: 0, estimatedHours: 0.25, dueDate: null, important: false },
-        })
-    }
-
-    handleNewProjectNameChange = (e) => {
-        this.setState({
-            newProject: { modalOpen: this.state.newProject.modalOpen, name: e.target.value },
+            newProjectModalOpen: open,
+            newTaskModalOpen: false,
         })
     }
 
     handleNewTaskModal = (open, projectName = "") => {
         this.setState({
-            newTask: { modalOpen: open, projectName: projectName, name: "", spentHours: 0, estimatedHours: 0.25, dueDate: null, important: false },
-            newProject: { modalOpen: false, name: "" },
-        })
-    }
-
-    handleNewTaskNameChange = (e) => {
-        this.setState({
-            newTask: {
-                modalOpen: this.state.newTask.modalOpen,
-                projectName: this.state.newTask.projectName,
-                name: e.target.value,
-                estimatedHours: this.state.newTask.estimatedHours,
-                dueDate: this.state.newTask.dueDate,
-                important: this.state.newTask.important
-            },
-        })
-    }
-
-    handleNewTaskEstimatedHoursChange = (value) => {
-        this.setState({
-            newTask: {
-                modalOpen: this.state.newTask.modalOpen,
-                projectName: this.state.newTask.projectName,
-                name: this.state.newTask.name,
-                spentHours: this.state.newTask.spentHours,
-                estimatedHours: value,
-                dueDate: this.state.newTask.dueDate,
-                important: this.state.newTask.important
-            },
-        })
-    }
-
-    handleNewTaskDueDateChange = (date) => {
-        this.setState({
-            newTask: {
-                modalOpen: this.state.newTask.modalOpen,
-                projectName: this.state.newTask.projectName,
-                name: this.state.newTask.name,
-                spentHours: this.state.newTask.spentHours,
-                estimatedHours: this.state.newTask.estimatedHours,
-                dueDate: date,
-                important: this.state.newTask.important
-            },
-        })
-    }
-
-    handleNewTaskImportantChange = (enabled) => {
-        this.setState({
-            newTask: {
-                modalOpen: this.state.newTask.modalOpen,
-                projectName: this.state.newTask.projectName,
-                name: this.state.newTask.name,
-                spentHours: this.state.newTask.spentHours,
-                estimatedHours: this.state.newTask.estimatedHours,
-                dueDate: this.state.newTask.dueDate,
-                important: enabled
-            },
+            newTaskModalOpen: open,
+            newTaskProjectName: projectName,
+            newProjectModalOpen: false,
         })
     }
 
@@ -225,56 +182,19 @@ class ProjectsView extends React.Component {
                     {this.renderProjects()}
                 </Content>
 
-                <Modal
-                    title="New Project"
-                    visible={this.state.newProject.modalOpen}
+                <ProjectModal
+                    title={"New Project"}
+                    visible={this.state.newProjectModalOpen}
                     onOk={this.createProject}
-                    onCancel={() => this.handleNewProjectModal(false)}
-                >
-                    <Input placeholder="Name" prefix={<Icon type="folder-open" style={{ color: 'rgba(0,0,0,.45)' }} />}
-                        onChange={this.handleNewProjectNameChange} value={this.state.newProject.name} />
-                </Modal>
+                    onCancel={this.handleNewProjectModal}
+                />
 
-                <Modal
-                    title="New Task"
-                    visible={this.state.newTask.modalOpen}
+                <TaskModal
+                    visible={this.state.newTaskModalOpen}
+                    projectName={this.state.newTaskProjectName}
                     onOk={this.createTask}
-                    onCancel={() => this.handleNewTaskModal(false)}
-                >
-                    <Input
-                        placeholder="Name"
-                        onChange={this.handleNewTaskNameChange} value={this.state.newTask.name}
-                        style={{ display: "block", marginBottom: "12px" }}
-                        prefix={
-                            <Icon type="folder-open" style={{ color: 'rgba(0,0,0,.45)' }} />
-                        }
-                    />
-
-                    Estimated hours:
-                    <InputNumber
-                        min={0.25}
-                        defaultValue={0.25}
-                        onChange={this.handleNewTaskEstimatedHoursChange}
-                        value={this.state.newTask.estimatedHours}
-                        style={{ display: "inline-block", marginBottom: "12px", marginLeft: "12px" }}
-                    />
-
-                    <DatePicker
-                        placeholder={"Due Date"}
-                        onChange={this.handleNewTaskDueDateChange}
-                        value={this.state.newTask.dueDate}
-                        style={{ display: "block", marginBottom: "12px" }}
-                    />
-
-                    Important:
-                    <Switch
-                        checkedChildren={<Icon type="check" />}
-                        unCheckedChildren={<Icon type="close" />}
-                        onChange={this.handleNewTaskImportantChange}
-                        checked={this.state.newTask.important}
-                        style={{ display: "inline-block", marginTop: "12px", marginBottom: "12px", marginLeft: "12px" }}
-                    />
-                </Modal>
+                    onCancel={this.handleNewTaskModal}
+                />
             </Layout >
         )
     }
@@ -282,54 +202,13 @@ class ProjectsView extends React.Component {
     renderProjects = () => {
         return (
             this.state.projects.map((project, i) => (
-                <List
-                    key={i}
-                    data-simplebar
-                    size="small"
-                    style={{
-                        backgroundColor: "#491a92", width: "24%",
-                        display: "inline-block", margin: "4px",
-                        fontFamily: "Fjalla One", color: "white",
-                        maxHeight: "500px", minHeight: "500px",
-                        overflow: "auto"
-                    }}
-                    header={
-                        <div style={{ fontSize: "42px", textAlign: "left", padding: "8px", paddingLeft: "24px" }}>
-                            {project.name.toUpperCase().substring(0, 15)}
-                            <Icon
-                                type="plus"
-                                onClick={() => this.handleNewTaskModal(true, project.name)}
-                                style={{ color: '#67ff35', float: "right", marginTop: "8px", marginRight: "12px", cursor: "pointer" }}
-                            />
-                            <Icon
-                                type="cross"
-                                onClick={() => this.deleteProject(project)}
-                                style={{ color: '#f32e2e', float: "right", marginTop: "18px", marginRight: "12px", cursor: "pointer", fontSize: '24px' }}
-                            />
-
-                        </div>
-                    }
-                    dataSource={project.tasks}
-                    renderItem={task => (
-                        <div style={{ color: task.important ? "#ffeb00" : "white", minHeight: "50px", fontSize: "22px", padding: "15px", textAlign: "left" }}>
-                            {task.name.substring(0, 28)}
-                            <div style={{ float: "right" }}>
-                                {task.estimatedHours}hs
-                                <Icon
-                                    type="check"
-                                    onClick={() => this.finishTask(task)}
-                                    style={{ color: '#67ff35', marginLeft: "8px", cursor: "pointer" }}
-                                />
-                                <Icon
-                                    type="cross"
-                                    onClick={() => this.deleteTask(task)}
-                                    style={{ color: '#f32e2e', marginLeft: "8px", cursor: "pointer" }}
-                                />
-
-                            </div>
-                        </div>
-                    )}
-
+                <ProjectCard project={project}
+                    handleNewTaskModal={this.handleNewTaskModal}
+                    editProject={this.editProject}
+                    moveProject={this.moveProject}
+                    deleteProject={this.deleteProject}
+                    deleteTask={this.deleteTask}
+                    finishTask={this.finishTask}
                 />
             ))
         )
