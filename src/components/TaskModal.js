@@ -1,5 +1,5 @@
 import React from 'react'
-import { Modal, Input, InputNumber, Icon, DatePicker, Switch } from 'antd';
+import { Modal, Input, InputNumber, Icon, DatePicker, Switch, Divider } from 'antd';
 import moment from 'moment'
 
 const INITIAL_STATE = {
@@ -7,6 +7,8 @@ const INITIAL_STATE = {
     estimatedHours: 0.25,
     dueDate: null,
     important: false,
+    daily: false,
+    weekly: false,
 }
 
 class TaskModal extends React.Component {
@@ -21,13 +23,16 @@ class TaskModal extends React.Component {
                 name: props.defaultValues.name,
                 estimatedHours: props.defaultValues.estimatedHours,
                 dueDate: props.defaultValues.dueDate,
-                important: props.defaultValues.important
+                important: props.defaultValues.important,
+                daily: props.defaultValues.daily,
+                weekly: props.defaultValues.weekly,
             })
         }
     }
 
     handleOk = () => {
-        this.props.onOk(this.state.name, this.state.estimatedHours, this.state.dueDate, this.state.important)
+        this.props.onOk(this.state.name, this.state.estimatedHours, this.state.dueDate, this.state.important, this.state.daily, this.state.weekly,
+            this.props.projectName ? this.props.projectName : "")
         this.resetValues()
     }
 
@@ -42,15 +47,21 @@ class TaskModal extends React.Component {
             estimatedHours: 0.25,
             dueDate: null,
             important: false,
+            daily: false,
+            weekly: false,
         })
     }
+
+    // #region handleChange
 
     handleNameChange = (e) => {
         this.setState({
             name: e.target.value,
             estimatedHours: this.state.estimatedHours,
             dueDate: this.state.dueDate,
-            important: this.state.important
+            important: this.state.important,
+            daily: this.state.daily,
+            weekly: this.state.weekly,
         })
     }
 
@@ -59,7 +70,9 @@ class TaskModal extends React.Component {
             name: this.state.name,
             estimatedHours: value,
             dueDate: this.state.dueDate,
-            important: this.state.important
+            important: this.state.important,
+            daily: this.state.daily,
+            weekly: this.state.weekly,
         })
     }
 
@@ -68,7 +81,9 @@ class TaskModal extends React.Component {
             name: this.state.name,
             estimatedHours: this.state.estimatedHours,
             dueDate: date,
-            important: this.state.important
+            important: this.state.important,
+            daily: this.state.daily,
+            weekly: this.state.weekly,
         })
     }
 
@@ -77,14 +92,40 @@ class TaskModal extends React.Component {
             name: this.state.name,
             estimatedHours: this.state.estimatedHours,
             dueDate: this.state.dueDate,
-            important: enabled
+            important: enabled,
+            daily: this.state.daily,
+            weekly: this.state.weekly,
         })
     }
+
+    handleDailyChange = (enabled) => {
+        this.setState({
+            name: this.state.name,
+            estimatedHours: this.state.estimatedHours,
+            dueDate: this.state.dueDate,
+            important: this.state.important,
+            daily: enabled,
+            weekly: this.state.weekly,
+        })
+    }
+
+    handleWeeklyChange = (enabled) => {
+        this.setState({
+            name: this.state.name,
+            estimatedHours: this.state.estimatedHours,
+            dueDate: this.state.dueDate,
+            important: this.state.important,
+            daily: this.state.daily,
+            weekly: enabled,
+        })
+    }
+
+    // #endregion
 
     render() {
         return (
             <Modal
-                title="New Task"
+                title={this.props.title}
                 visible={this.props.visible}
                 onOk={() => this.handleOk()}
                 onCancel={() => this.handleCancel()}
@@ -98,7 +139,7 @@ class TaskModal extends React.Component {
                     }
                 />
 
-                Estimated hours:
+                Estimated hours
                 <InputNumber
                     min={0.25}
                     defaultValue={0.25}
@@ -114,14 +155,38 @@ class TaskModal extends React.Component {
                     style={{ display: "block", marginBottom: "12px" }}
                 />
 
-                Important:
-                <Switch
-                    checkedChildren={<Icon type="check" />}
-                    unCheckedChildren={<Icon type="close" />}
-                    onChange={this.handleImportantChange}
-                    checked={this.state.important}
-                    style={{ display: "inline-block", marginTop: "12px", marginBottom: "12px", marginLeft: "12px" }}
-                />
+                <div style={{ display: "block" }}>
+                    Important
+                    <Switch
+                        checkedChildren={<Icon type="check" />}
+                        unCheckedChildren={<Icon type="close" />}
+                        onChange={this.handleImportantChange}
+                        checked={this.state.important}
+                        style={{ display: "inline-block", marginTop: "12px", marginBottom: "12px", marginLeft: "12px" }}
+                    />
+                </div>
+
+                <div style={{ display: "block" }}>
+                    Daily
+                    <Switch
+                        checkedChildren={<Icon type="check" />}
+                        unCheckedChildren={<Icon type="close" />}
+                        onChange={this.handleDailyChange}
+                        checked={this.state.daily}
+                        style={{ display: "inline-block", marginTop: "12px", marginBottom: "12px", marginLeft: "12px" }}
+                    />
+                </div>
+
+                <div style={{ display: "block" }}>
+                    Weekly
+                    <Switch
+                        checkedChildren={<Icon type="check" />}
+                        unCheckedChildren={<Icon type="close" />}
+                        onChange={this.handleWeeklyChange}
+                        checked={this.state.weekly}
+                        style={{ display: "inline-block", marginTop: "12px", marginBottom: "12px", marginLeft: "12px" }}
+                    />
+                </div>
             </Modal>
         )
     }

@@ -3,6 +3,7 @@ import { Icon, List, Typography } from 'antd';
 import moment from 'moment'
 import ProjectModal from './ProjectModal'
 import TaskModal from './TaskModal'
+import TaskItem from './TaskItem'
 
 
 const { Text } = Typography;
@@ -25,19 +26,16 @@ class ProjectCard extends React.Component {
         this.handleEditProjectModal(false)
     }
 
-    editTask = (name, estimatedHours, dueDate, important) => {
-        this.props.editTask(this.state.selectedTask, name, estimatedHours, dueDate, important)
-        this.handleEditTaskModal(false, { name: "", estimatedHours: 0.25, dueDate: null, important: false })
+    editTask = (name, estimatedHours, dueDate, important, daily, weekly) => {
+        this.props.editTask(this.state.selectedTask, name, estimatedHours, dueDate, important, daily, weekly)
+        this.handleEditTaskModal(false, this.getEmptyTask())
+    }
+
+    getEmptyTask = () => {
+        return { name: "", estimatedHours: 0.25, dueDate: null, important: false, daily: false, weekly: false }
     }
 
     // #region Helper Functions
-    dueDateWarning = (task) => {
-        return (moment().diff(task.dueDate, 'days') > -1)
-    }
-
-    dueDateNear = (task) => {
-        return (moment().diff(task.dueDate, 'days') > -3 && !this.dueDateWarning(task))
-    }
 
     calculatePercentage = (project) => {
         let totalHours = 0
@@ -83,20 +81,15 @@ class ProjectCard extends React.Component {
     // #endregion
 
     render() {
-
-        for (let i = 0; i < this.props.project.tasks.length; i++) {
-            console.log(this.props.project.tasks[i])
-        }
-
         return (
             <div
                 data-simplebar
                 style={{
-                    backgroundColor: "#491a92", width: "24%",
+                    backgroundColor: "#491a92", width: "24.5%",
                     display: "inline-block", margin: "4px",
                     fontFamily: "Fjalla One", color: "white",
                     maxHeight: "500px", minHeight: "500px",
-                    overflow: "auto"
+                    overflow: "auto", marginBottom: 0,
                 }}
             >
                 <List
@@ -121,36 +114,12 @@ class ProjectCard extends React.Component {
                     }
                     dataSource={this.props.project.tasks}
                     renderItem={task => (
-                        <div style={{ color: task.important ? "#ffeb00" : "white", minHeight: "50px", fontSize: "22px", padding: "15px", textAlign: "left" }}>
-                            {this.dueDateWarning(task) &&
-                                <Icon
-                                    type="warning"
-                                    style={{ color: 'red', marginLeft: "4px", marginRight: "8px" }}
-                                />
-                            }
-                            {this.dueDateNear(task) &&
-                                <Icon
-                                    type="clock-circle"
-                                    style={{ color: 'white', marginLeft: "4px", marginRight: "8px" }}
-                                />
-                            }
-
-                            <Text style={{ color: task.important ? "#ffeb00" : "white" }} onClick={() => this.handleEditTaskModal(true, task)}>{task.name.substring(0, 28)}</Text>
-                            <div style={{ float: "right" }}>
-                                {task.estimatedHours}hs
-                            <Icon
-                                    type="check"
-                                    onClick={() => this.props.finishTask(task)}
-                                    style={{ color: '#67ff35', marginLeft: "8px", cursor: "pointer" }}
-                                />
-                                <Icon
-                                    type="cross"
-                                    onClick={() => this.props.deleteTask(task)}
-                                    style={{ color: '#f32e2e', marginLeft: "8px", cursor: "pointer" }}
-                                />
-
-                            </div>
-                        </div>
+                        <TaskItem
+                            task={task}
+                            finishTask={this.props.finishTask}
+                            deleteTask={this.props.deleteTask}
+                            handleEditTaskModal={this.handleEditTaskModal}
+                        />
                     )}
                     footer={
                         <div
@@ -192,10 +161,8 @@ class ProjectCard extends React.Component {
                     visible={this.state.editTaskModalOpen}
                     onOk={this.editTask}
                     onCancel={this.handleEditTaskModal}
-
                     defaultValues={this.state.selectedTask ? this.state.selectedTask : null}
                 />
-
             </div>
         )
     }

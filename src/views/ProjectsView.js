@@ -7,6 +7,7 @@ import 'simplebar/dist/simplebar.css';
 import ProjectModal from '../components/ProjectModal'
 import TaskModal from '../components/TaskModal'
 import ProjectCard from '../components/ProjectCard'
+import HalfScreen from '../components/HalfScreen'
 
 const { Content } = Layout;
 
@@ -42,6 +43,16 @@ class ProjectsView extends React.Component {
         for (let i = 0; i < projects.length; i++) {
             if (projects[i].name === project.name) {
                 projects[i].name = name
+                for (let j = 0; j < projects[i].tasks.length; j++) {
+                    projects[i].tasks[j].projectName = name
+                }
+                for (let j = 0; j < projects[i].finishedTasks.length; j++) {
+                    projects[i].finishedTasks[j].projectName = name
+                }
+                for (let j = 0; j < projects[i].archivedTasks.length; j++) {
+                    projects[i].archivedTasks[j].projectName = name
+                }
+
                 break
             }
         }
@@ -65,7 +76,7 @@ class ProjectsView extends React.Component {
         this.save();
     }
 
-    createTask = (projectName, name, estimatedHours, dueDate, important) => {
+    createTask = (name, estimatedHours, dueDate, important, daily, weekly, projectName) => {
         let projects = this.state.projects
 
         for (let i = 0; i < projects.length; i++) {
@@ -75,7 +86,9 @@ class ProjectsView extends React.Component {
                     name: name,
                     estimatedHours: estimatedHours,
                     dueDate: dueDate,
-                    important: important
+                    important: important,
+                    daily: daily,
+                    weekly: weekly,
                 })
                 break;
             }
@@ -86,7 +99,7 @@ class ProjectsView extends React.Component {
         this.save();
     }
 
-    editTask = (task, name, estimatedHours, dueDate, important) => {
+    editTask = (task, name, estimatedHours, dueDate, important, daily, weekly) => {
         let projects = this.state.projects
         for (let i = 0; i < projects.length; i++) {
             if (projects[i].name === task.projectName) {
@@ -96,12 +109,8 @@ class ProjectsView extends React.Component {
                         projects[i].tasks[j].estimatedHours = estimatedHours
                         projects[i].tasks[j].dueDate = dueDate
                         projects[i].tasks[j].important = important
-                        console.log("EEEE")
-                        console.log(name)
-                        console.log(estimatedHours)
-                        console.log(dueDate)
-                        console.log(important)
-                        console.log(projects[i].tasks[j])
+                        projects[i].tasks[j].daily = daily
+                        projects[i].tasks[j].weekly = weekly
                         break
                     }
                 }
@@ -203,9 +212,20 @@ class ProjectsView extends React.Component {
             <Layout>
                 <KeyboardEventHandler handleKeys={['p', 'P']} onKeyEvent={(key, e) => this.handleNewProjectModal(true)} />
 
-                <Content style={{ height: "100%" }}>
+                <Content style={{ height: "100%", backgroundColor: "rgb(148, 67, 255)" }}>
                     {this.renderProjects()}
                 </Content>
+
+                <Content style={{ height: "500px" }}>
+                    <HalfScreen backgroundColor={"#f1de58"}>
+                        TODAY
+                    </HalfScreen>
+
+                    <HalfScreen backgroundColor={"#f19858"}>
+                        THIS WEEK
+                    </HalfScreen>
+                </Content>
+
 
                 <ProjectModal
                     title={"New Project"}
@@ -215,6 +235,7 @@ class ProjectsView extends React.Component {
                 />
 
                 <TaskModal
+                    title={"New Task"}
                     visible={this.state.newTaskModalOpen}
                     projectName={this.state.newTaskProjectName}
                     onOk={this.createTask}
@@ -241,7 +262,6 @@ class ProjectsView extends React.Component {
     }
 
     // #endregion
-
 }
 
 export default ProjectsView;
