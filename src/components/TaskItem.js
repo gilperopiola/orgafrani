@@ -7,7 +7,6 @@ const { Text } = Typography
 class TaskItem extends React.Component {
     constructor(props) {
         super(props)
-
     }
 
     dueDateWarning = (task) => {
@@ -20,7 +19,7 @@ class TaskItem extends React.Component {
 
     render() {
         return (
-            <div style={{ color: this.props.task.important ? "#ffeb00" : "white", minHeight: "50px", fontSize: "22px", padding: "15px", textAlign: "left" }}>
+            <div style={{ color: this.props.task.important ? "#ffeb00" : this.props.black ? "black" : "white", minHeight: "50px", fontSize: "22px", padding: "15px", textAlign: "left" }}>
                 {this.dueDateWarning(this.props.task) &&
                     <Icon
                         type="warning"
@@ -34,10 +33,12 @@ class TaskItem extends React.Component {
                     />
                 }
 
-                <Text style={{ color: this.props.task.important ? "#ffeb00" : "white" }} onClick={() => this.props.handleEditTaskModal(true, this.props.task)}>{this.props.task.name.substring(0, 28)}</Text>
+                <Text style={{ color: this.props.task.important ? "#ffeb00" : this.props.black ? "black" : "white" }} onClick={() => this.props.handleEditTaskModal(true, this.props.task)}>
+                    {this.props.task.name.substring(0, 28)}
+                </Text>
                 <div style={{ float: "right" }}>
                     {this.props.task.estimatedHours}hs
-            <Icon
+                    <Icon
                         type="check"
                         onClick={() => this.props.finishTask(this.props.task)}
                         style={{ color: '#67ff35', marginLeft: "8px", cursor: "pointer" }}

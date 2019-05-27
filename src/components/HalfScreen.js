@@ -1,29 +1,31 @@
 import React from 'react'
 import { Layout, Typography, InputNumber, Icon, DatePicker, Switch, Divider } from 'antd';
+import TaskItem from './TaskItem'
 
 const { Content } = Layout;
 const { Text } = Typography;
 
 
-const INITIAL_STATE = {
-}
-
 class HalfScreen extends React.Component {
     constructor(props) {
         super(props)
-        this.state = INITIAL_STATE
     }
 
     render() {
         return (
             <Content
-                style={{ width: "50%", backgroundColor: this.props.backgroundColor, height: "100%", display: "inline-block", fontFamily: "Fjalla One" }}
+                style={{
+                    width: "50%", backgroundColor: this.props.backgroundColor, height: "100%", maxHeight: "500px",
+                    display: "inline-block", fontFamily: "Fjalla One", overflowY: "auto"
+                }}
             >
                 <Text style={{ fontSize: "64px", color: "black" }}>
                     {this.props.title}
                 </Text>
 
-                {this.renderTasks()}
+                <div style={{ width: "50%" }}>
+                    {this.renderTasks()}
+                </div>
             </Content>
         )
     }
@@ -36,7 +38,8 @@ class HalfScreen extends React.Component {
                     task={task}
                     finishTask={this.props.finishTask}
                     deleteTask={this.props.deleteTask}
-                    handleEditTaskModal={this.handleEditTaskModal}
+                    handleEditTaskModal={this.props.handleEditTaskModal}
+                    black
                 />
             ))
         )

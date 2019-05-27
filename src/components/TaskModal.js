@@ -31,8 +31,7 @@ class TaskModal extends React.Component {
     }
 
     handleOk = () => {
-        this.props.onOk(this.state.name, this.state.estimatedHours, this.state.dueDate, this.state.important, this.state.daily, this.state.weekly,
-            this.props.projectName ? this.props.projectName : "")
+        this.props.onOk(this.state.name, this.state.estimatedHours, this.state.dueDate, this.state.important, this.state.daily, this.state.weekly, this.props.projectName ? this.props.projectName : "")
         this.resetValues()
     }
 

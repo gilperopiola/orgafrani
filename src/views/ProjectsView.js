@@ -13,10 +13,17 @@ const { Content } = Layout;
 
 const INITIAL_STATE = {
     projects: [],
+    daily: [],
+    weekly: [],
 
     newProjectModalOpen: false,
     newTaskModalOpen: false,
     newTaskProjectName: "",
+
+    editProjectModalOpen: false,
+    selectedProject: {},
+    editTaskModalOpen: false,
+    selectedTask: {},
 }
 
 class ProjectsView extends React.Component {
@@ -29,6 +36,11 @@ class ProjectsView extends React.Component {
         this.load()
     }
 
+    componentDidMount = () => {
+        this.getDailyTasks()
+        this.getWeeklyTasks()
+    }
+
     // #region Internal Data Management
     createProject = (name) => {
         let projects = this.state.projects
@@ -38,11 +50,13 @@ class ProjectsView extends React.Component {
         this.save();
     }
 
-    editProject = (project, name) => {
+    editProject = (name) => {
         let projects = this.state.projects
+
         for (let i = 0; i < projects.length; i++) {
-            if (projects[i].name === project.name) {
+            if (projects[i].name === this.state.selectedProject.name) {
                 projects[i].name = name
+
                 for (let j = 0; j < projects[i].tasks.length; j++) {
                     projects[i].tasks[j].projectName = name
                 }
@@ -57,8 +71,9 @@ class ProjectsView extends React.Component {
             }
         }
 
-        this.setState({ projects: projects });
-        this.save();
+        this.setState({ projects: projects })
+        this.save()
+        this.handleEditProjectModal(false)
     }
 
     moveProject = (project, swapIndex) => {
@@ -74,6 +89,14 @@ class ProjectsView extends React.Component {
 
         this.setState({ projects: projects });
         this.save();
+    }
+
+    getEmptyProject = () => {
+        return { name: "" }
+    }
+
+    getEmptyTask = () => {
+        return { name: "", estimatedHours: 0.25, dueDate: null, important: false, daily: false, weekly: false }
     }
 
     createTask = (name, estimatedHours, dueDate, important, daily, weekly, projectName) => {
@@ -97,14 +120,18 @@ class ProjectsView extends React.Component {
         this.setState({ projects: projects });
         this.handleNewTaskModal(false);
         this.save();
+        this.getDailyTasks()
+        this.getWeeklyTasks()
     }
 
-    editTask = (task, name, estimatedHours, dueDate, important, daily, weekly) => {
+    editTask = (name, estimatedHours, dueDate, important, daily, weekly) => {
         let projects = this.state.projects
+
         for (let i = 0; i < projects.length; i++) {
-            if (projects[i].name === task.projectName) {
+            if (projects[i].name === this.state.selectedTask.projectName) {
+
                 for (let j = 0; j < projects[i].tasks.length; j++) {
-                    if (projects[i].tasks[j].name === task.name) {
+                    if (projects[i].tasks[j].name === this.state.selectedTask.name) {
                         projects[i].tasks[j].name = name
                         projects[i].tasks[j].estimatedHours = estimatedHours
                         projects[i].tasks[j].dueDate = dueDate
@@ -119,6 +146,9 @@ class ProjectsView extends React.Component {
 
         this.setState({ projects: projects });
         this.save();
+        this.handleEditTaskModal(false)
+        this.getDailyTasks()
+        this.getWeeklyTasks()
     }
 
     finishTask = (task) => {
@@ -138,6 +168,8 @@ class ProjectsView extends React.Component {
 
         this.setState({ projects: projects });
         this.save();
+        this.getDailyTasks()
+        this.getWeeklyTasks()
     }
 
     deleteTask = (task) => {
@@ -156,6 +188,8 @@ class ProjectsView extends React.Component {
 
         this.setState({ projects: projects });
         this.save();
+        this.getDailyTasks()
+        this.getWeeklyTasks()
     }
 
     deleteProject = (project) => {
@@ -192,6 +226,8 @@ class ProjectsView extends React.Component {
         this.setState({
             newProjectModalOpen: open,
             newTaskModalOpen: false,
+            editProjectModalOpen: false,
+            editTaskModalOpen: false,
         })
     }
 
@@ -200,12 +236,68 @@ class ProjectsView extends React.Component {
             newTaskModalOpen: open,
             newTaskProjectName: projectName,
             newProjectModalOpen: false,
+            editProjectModalOpen: false,
+            editTaskModalOpen: false,
+        })
+    }
+
+    handleEditProjectModal = (open, project = this.getEmptyProject()) => {
+        this.setState({
+            editProjectModalOpen: open,
+            selectedProject: project,
+            newProjectModalOpen: false,
+            newTaskModalOpen: false,
+            editTaskModalOpen: false,
+        })
+    }
+
+    handleEditTaskModal = (open, task = this.getEmptyTask()) => {
+        this.setState({
+            editTaskModalOpen: open,
+            selectedTask: task,
+            newProjectModalOpen: false,
+            newTaskModalOpen: false,
+            editProjectModalOpen: false,
         })
     }
 
     //    #endregion
 
     // #region Render Functions
+
+    getDailyTasks = () => {
+        let projects = this.state.projects
+        let dailyTasks = []
+
+        for (let i = 0; i < projects.length; i++) {
+            for (let j = 0; j < projects[i].tasks.length; j++) {
+                if (projects[i].tasks[j].daily) {
+                    dailyTasks.push(projects[i].tasks[j])
+                }
+            }
+        }
+
+        this.setState({
+            daily: dailyTasks,
+        })
+    }
+
+    getWeeklyTasks = () => {
+        let projects = this.state.projects
+        let weeklyTasks = []
+
+        for (let i = 0; i < projects.length; i++) {
+            for (let j = 0; j < projects[i].tasks.length; j++) {
+                if (projects[i].tasks[j].weekly) {
+                    weeklyTasks.push(projects[i].tasks[j])
+                }
+            }
+        }
+
+        this.setState({
+            weekly: weeklyTasks,
+        })
+    }
 
     render() {
         return (
@@ -217,15 +309,26 @@ class ProjectsView extends React.Component {
                 </Content>
 
                 <Content style={{ height: "500px" }}>
-                    <HalfScreen backgroundColor={"#f1de58"}>
-                        TODAY
-                    </HalfScreen>
+                    <HalfScreen
+                        title={"TODAY"}
+                        backgroundColor={"#f1de58"}
+                        tasks={this.state.daily}
 
-                    <HalfScreen backgroundColor={"#f19858"}>
-                        THIS WEEK
-                    </HalfScreen>
+                        finishTask={this.finishTask}
+                        deleteTask={this.deleteTask}
+                        handleEditTaskModal={this.handleEditTaskModal}
+                    />
+
+                    <HalfScreen
+                        title={"THIS WEEK"}
+                        backgroundColor={"#f19858"}
+                        tasks={this.state.weekly}
+
+                        finishTask={this.finishTask}
+                        deleteTask={this.deleteTask}
+                        handleEditTaskModal={this.handleEditTaskModal}
+                    />
                 </Content>
-
 
                 <ProjectModal
                     title={"New Project"}
@@ -241,6 +344,23 @@ class ProjectsView extends React.Component {
                     onOk={this.createTask}
                     onCancel={this.handleNewTaskModal}
                 />
+
+                <ProjectModal
+                    title={"Edit Project"}
+                    visible={this.state.editProjectModalOpen}
+                    onOk={this.editProject}
+                    onCancel={this.handleEditProjectModal}
+                    defaultName={this.state.selectedProject.name}
+                />
+
+                <TaskModal
+                    title={"Edit Task"}
+                    visible={this.state.editTaskModalOpen}
+                    onOk={this.editTask}
+                    onCancel={this.handleEditTaskModal}
+                    defaultValues={this.state.selectedTask ? this.state.selectedTask : null}
+                />
+
             </Layout >
         )
     }
@@ -248,11 +368,17 @@ class ProjectsView extends React.Component {
     renderProjects = () => {
         return (
             this.state.projects.map((project, i) => (
-                <ProjectCard key={i} project={project}
+                <ProjectCard
+                    key={i}
+                    project={project}
+
                     handleNewTaskModal={this.handleNewTaskModal}
+                    handleEditTaskModal={this.handleEditTaskModal}
+
                     editProject={this.editProject}
                     moveProject={this.moveProject}
                     deleteProject={this.deleteProject}
+
                     finishTask={this.finishTask}
                     editTask={this.editTask}
                     deleteTask={this.deleteTask}
