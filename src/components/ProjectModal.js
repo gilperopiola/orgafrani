@@ -11,10 +11,10 @@ class ProjectModal extends React.Component {
         this.state = INITIAL_STATE
     }
 
-    componentWillReceiveProps = () => {
-        if (this.props.defaultName !== "") {
+    componentWillReceiveProps = (props) => {
+        if (props.defaultValues !== undefined && props.defaultValues !== {} && props.defaultValues !== null) {
             this.setState({
-                name: this.props.defaultName
+                name: props.defaultValues.name,
             })
         }
     }

@@ -350,7 +350,7 @@ class ProjectsView extends React.Component {
                     visible={this.state.editProjectModalOpen}
                     onOk={this.editProject}
                     onCancel={this.handleEditProjectModal}
-                    defaultName={this.state.selectedProject.name}
+                    defaultValues={this.state.selectedProject ? this.state.selectedProject : null}
                 />
 
                 <TaskModal
@@ -373,6 +373,7 @@ class ProjectsView extends React.Component {
                     project={project}
 
                     handleNewTaskModal={this.handleNewTaskModal}
+                    handleEditProjectModal={this.handleEditProjectModal}
                     handleEditTaskModal={this.handleEditTaskModal}
 
                     editProject={this.editProject}
