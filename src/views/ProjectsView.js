@@ -1,5 +1,5 @@
 import React from 'react'
-import { Layout } from 'antd';
+import { Layout, Typography } from 'antd';
 import KeyboardEventHandler from 'react-keyboard-event-handler';
 import 'simplebar';
 import 'simplebar/dist/simplebar.css';
@@ -8,8 +8,10 @@ import ProjectModal from '../components/ProjectModal'
 import TaskModal from '../components/TaskModal'
 import ProjectCard from '../components/ProjectCard'
 import HalfScreen from '../components/HalfScreen'
+import FraniTree from '../components/FraniTree'
 
 const { Content } = Layout;
+const { Text } = Typography;
 
 const INITIAL_STATE = {
     projects: [],
@@ -24,6 +26,208 @@ const INITIAL_STATE = {
     selectedProject: {},
     editTaskModalOpen: false,
     selectedTask: {},
+
+    testData: [{
+        "name": "Programming",
+        "description": "83",
+        "children": [{
+            "name": "Frontend",
+            "description": "60",
+            "children": [{
+                "name": "HTML & CSS",
+                "description": "69",
+                "children": []
+            }, {
+                "name": "JavaScript",
+                "description": "70",
+                "children": []
+            }, {
+                "name": "React JS",
+                "description": "70",
+                "children": []
+            }]
+        }, {
+            "name": "Backend",
+            "description": "80",
+            "children": [{
+                "name": "Golang",
+                "description": "80",
+                "children": []
+            }, {
+                "name": "PHP",
+                "description": "56",
+                "children": []
+            }, {
+                "name": "Node JS",
+                "description": "0",
+                "children": []
+            }, {
+                "name": "SQL",
+                "description": "60",
+                "children": []
+            }, {
+                "name": "Heroku",
+                "description": "60",
+                "children": []
+            }, {
+                "name": "AWS",
+                "description": "30",
+                "children": []
+            }, {
+                "name": "Google Cloud",
+                "description": "20",
+                "children": []
+            }]
+        }, {
+            "name": "Videogames",
+            "description": "75",
+            "children": [{
+                "name": "C#",
+                "description": "77",
+                "children": []
+            }, {
+                "name": "Unity",
+                "description": "72",
+                "children": []
+            }, {
+                "name": "C++",
+                "description": "52",
+                "children": []
+            }]
+        }, {
+            "name": "Mobile",
+            "description": "34",
+            "children": [{
+                "name": "Android Studio",
+                "description": "32",
+                "children": []
+            }, {
+                "name": "React Native",
+                "description": "36",
+                "children": []
+            }]
+        }, {
+            "name": "AI",
+            "description": "71",
+            "children": []
+        }]
+    }, {
+        "name": "Writing",
+        "description": "83",
+        "children": []
+    }, {
+        "name": "Mathematics",
+        "description": "52",
+        "children": []
+    }, {
+        "name": "Physics",
+        "description": "62",
+        "children": []
+    }, {
+        "name": "Chemistry",
+        "description": "33",
+        "children": []
+    }, {
+        "name": "Psychology",
+        "description": "47",
+        "children": []
+    }, {
+        "name": "Philosophy",
+        "description": "60",
+        "children": []
+    }, {
+        "name": "Linguistics",
+        "description": "40",
+        "children": []
+    }, {
+        "name": "2D Arts",
+        "description": "35",
+        "children": [{
+            "name": "Drawing",
+            "description": "32",
+            "children": []
+        }, {
+            "name": "Pixel Art",
+            "description": "43",
+            "children": []
+        }]
+    }, {
+        "name": "3D Arts",
+        "description": "45",
+        "children": [{
+            "name": "3D Modeling",
+            "description": "49",
+            "children": []
+        }, {
+            "name": "Voxel Art",
+            "description": "48",
+            "children": []
+        }]
+    }, {
+        "name": "Economy",
+        "description": "28",
+        "children": []
+    }, {
+        "name": "History",
+        "description": "60",
+        "children": [{
+            "name": "Universal History",
+            "description": "55",
+            "children": []
+        }, {
+            "name": "Human History",
+            "description": "62",
+            "children": [{
+                "name": "Science History",
+                "description": "46",
+                "children": []
+            }, {
+                "name": "Argentinian History",
+                "description": "64",
+                "children": []
+            }]
+        }]
+    }, {
+        "name": "Literature",
+        "description": "36",
+        "children": []
+    }, {
+        "name": "Video Editing",
+        "description": "33",
+        "children": []
+    }, {
+        "name": "Photography",
+        "description": "52",
+        "children": [{
+            "name": "Theory",
+            "description": "18",
+            "children": []
+        }, {
+            "name": "Photo Editing",
+            "description": "43",
+            "children": []
+        }]
+    }, {
+        "name": "Music Making",
+        "description": "40",
+        "children": [{
+            "name": "Piano",
+            "description": "21",
+            "children": []
+        }, {
+            "name": "Ukelele",
+            "description": "24",
+            "children": []
+        }, {
+            "name": "Drums",
+            "description": "46",
+            "children": []
+        }]
+    }, {
+        "name": "Biology",
+        "description": "45",
+        "children": []
+    }]
 }
 
 class ProjectsView extends React.Component {
@@ -304,10 +508,6 @@ class ProjectsView extends React.Component {
             <Layout>
                 <KeyboardEventHandler handleKeys={['p', 'P']} onKeyEvent={(key, e) => this.handleNewProjectModal(true)} />
 
-                <Content style={{ height: "100%", backgroundColor: "rgb(148, 67, 255)" }}>
-                    {this.renderProjects()}
-                </Content>
-
                 <Content style={{ height: "500px" }}>
                     <HalfScreen
                         title={"TODAY"}
@@ -327,6 +527,17 @@ class ProjectsView extends React.Component {
                         finishTask={this.finishTask}
                         deleteTask={this.deleteTask}
                         handleEditTaskModal={this.handleEditTaskModal}
+                    />
+                </Content>
+
+                <Content style={{ height: "100%", backgroundColor: "rgb(148, 67, 255)" }}>
+                    {this.renderProjects()}
+                </Content>
+
+                <Content style={{ height: "100%", backgroundColor: "rgb(148, 67, 255)" }}>
+                    <Text style={{ fontFamily: "Fjalla One", color: "white", fontSize: "38px" }}>SKILLS</Text>
+                    <FraniTree
+                        data={this.state.testData}
                     />
                 </Content>
 
