@@ -54,6 +54,7 @@ class FraniTree extends React.Component {
                     description={row.description}
                     level={row.level}
                     statusBar={true}
+                    update={this.props.update}
                 />
             ))
         )
@@ -61,7 +62,7 @@ class FraniTree extends React.Component {
 
     render() {
         return (
-            <div style={{ marginLeft: "33%" }}>
+            <div>
                 {this.renderTree()}
             </div>
         )

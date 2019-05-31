@@ -56,65 +56,35 @@ class TaskModal extends React.Component {
     handleNameChange = (e) => {
         this.setState({
             name: e.target.value,
-            estimatedHours: this.state.estimatedHours,
-            dueDate: this.state.dueDate,
-            important: this.state.important,
-            daily: this.state.daily,
-            weekly: this.state.weekly,
         })
     }
 
     handleEstimatedHoursChange = (value) => {
         this.setState({
-            name: this.state.name,
             estimatedHours: value,
-            dueDate: this.state.dueDate,
-            important: this.state.important,
-            daily: this.state.daily,
-            weekly: this.state.weekly,
         })
     }
 
     handleDueDateChange = (date) => {
         this.setState({
-            name: this.state.name,
-            estimatedHours: this.state.estimatedHours,
             dueDate: date,
-            important: this.state.important,
-            daily: this.state.daily,
-            weekly: this.state.weekly,
         })
     }
 
     handleImportantChange = (enabled) => {
         this.setState({
-            name: this.state.name,
-            estimatedHours: this.state.estimatedHours,
-            dueDate: this.state.dueDate,
             important: enabled,
-            daily: this.state.daily,
-            weekly: this.state.weekly,
         })
     }
 
     handleDailyChange = (enabled) => {
         this.setState({
-            name: this.state.name,
-            estimatedHours: this.state.estimatedHours,
-            dueDate: this.state.dueDate,
-            important: this.state.important,
             daily: enabled,
-            weekly: this.state.weekly,
         })
     }
 
     handleWeeklyChange = (enabled) => {
         this.setState({
-            name: this.state.name,
-            estimatedHours: this.state.estimatedHours,
-            dueDate: this.state.dueDate,
-            important: this.state.important,
-            daily: this.state.daily,
             weekly: enabled,
         })
     }

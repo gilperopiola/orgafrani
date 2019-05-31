@@ -19,11 +19,13 @@ class HalfScreen extends React.Component {
                     display: "inline-block", fontFamily: "Fjalla One", overflowY: "auto"
                 }}
             >
-                <Text style={{ fontSize: "64px", color: "black" }}>
-                    {this.props.title}
-                </Text>
+                <div>
+                    <Text style={{ fontSize: "64px", color: "black", height: "94px" }}>
+                        {this.props.title}
+                    </Text>
+                </div>
 
-                <div style={{ width: "50%" }}>
+                <div style={{ width: "50%", backgroundColor: "#0000001f", height: "404px" }}>
                     {this.renderTasks()}
                 </div>
             </Content>

@@ -49,3 +49,134 @@
   }
 }
 
+/* --------------------- */
+.frani-tree-row-main {
+  width: 50%;
+  height: 70px;
+  background-color: #491a92;
+  color: white;
+  font-family: Fjalla One;
+  font-size: 36px;
+  text-align: left;
+  display: inline-block
+}
+
+.frani-tree-row-status-bar-left {
+  width: 6px;
+  height: 100%;
+  position: relative;
+  float: left; 
+}
+
+.frani-tree-row-step {
+  background-color: #210748;
+  height: 100%;
+  position: relative;
+  float: left; 
+}
+
+.frani-tree-row-name {
+  padding-left: 14px; 
+  display: inline-block; 
+  vertical-align: sub;
+}
+
+.frani-tree-row-description{
+  position: relative; 
+  float: right; 
+  margin-right: 12px; 
+  margin-top: 8px; 
+  color: gold;
+}
+
+.frani-tree-row-status-bar-right {
+  width: 200px;
+  background-color: rgb(33, 7, 72);
+  height: 70px;
+  display: inline-block;
+  margin-bottom: -30px;
+}
+
+.frani-tree-row-status-bar-right-2 {
+  height: 70px;
+}
+
+/* */
+.frani-project-card-main {
+  background-color: #491a92; 
+  width: 24.5%;
+  display: inline-block; 
+  margin: 4px;
+  font-family: Fjalla One; 
+  color: white;
+  max-height: 500px; 
+  min-height: 500px;
+  overflow: auto; 
+  margin-bottom: 0;
+}
+
+.frani-project-card-header {
+  font-size: 42px; 
+  text-align: left; 
+  padding: 8px; 
+  padding-left: 24px
+}
+
+.frani-project-card-footer {
+  font-size: 42px; 
+  text-align: center;
+  padding: 8px; 
+  padding-left: 24px;
+  background-color: #7145b7;
+}
+/* */
+.frani-small-project-card-main {
+  background-color: #491a92; 
+  width: 16.3%;
+  display: inline-block; 
+  margin: 3px;
+  font-family: Fjalla One; 
+  color: white;
+  max-height: 500px; 
+  min-height: 500px;
+  overflow: auto; 
+  margin-bottom: 0;
+}
+
+.frani-small-project-card-header {
+  font-size: 26px; 
+  text-align: left; 
+  padding: 6px; 
+  padding-left: 18px
+}
+
+.frani-small-project-card-footer {
+  font-size: 26px; 
+  text-align: center;
+  padding: 6px; 
+  padding-left: 18px;
+  background-color: #7145b7;
+}
+
+/* */
+.frani-task-item-main {
+  min-height: 50px; 
+  font-size: 22px; 
+  padding: 15px; 
+  text-align: left;
+}
+
+.frani-task-item-hours {
+  float: right;
+}
+/* */
+.frani-small-task-item-main {
+  min-height: 50px; 
+  font-size: 15px; 
+  padding: 15px; 
+  text-align: left;
+}
+
+.frani-small-task-item-hours {
+  float: right;
+}

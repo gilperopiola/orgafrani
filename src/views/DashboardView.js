@@ -6,7 +6,7 @@ import 'simplebar/dist/simplebar.css';
 
 import ProjectModal from '../components/ProjectModal'
 import TaskModal from '../components/TaskModal'
-import ProjectCard from '../components/ProjectCard'
+import SmallProjectCard from '../components/SmallProjectCard'
 import HalfScreen from '../components/HalfScreen'
 import FraniTree from '../components/FraniTree'
 
@@ -15,6 +15,10 @@ const { Text } = Typography;
 
 const INITIAL_STATE = {
     projects: [],
+    importantProjects: [],
+    skills: [],
+    daily: [],
+    weekly: [],
 
     newProjectModalOpen: false,
     newTaskModalOpen: false,
@@ -26,7 +30,7 @@ const INITIAL_STATE = {
     selectedTask: {},
 }
 
-class ProjectsView extends React.Component {
+class DashboardView extends React.Component {
     constructor(props) {
         super(props)
         this.state = INITIAL_STATE
@@ -36,7 +40,44 @@ class ProjectsView extends React.Component {
         this.load()
     }
 
+    componentDidMount = () => {
+        this.getDailyTasks()
+        this.getWeeklyTasks()
+    }
+
     // #region Internal Data Management
+    updateSkill = (name, amount) => {
+        let skills = this.state.skills
+
+        for (let i = 0; i < skills.length; i++) {
+            if (skills[i].name === name) {
+                skills[i].description = parseInt(skills[i].description) + amount
+                break
+            }
+
+            if (skills[i].children.length > 0) {
+                for (let j = 0; j < skills[i].children.length; j++) {
+                    if (skills[i].children[j].name === name) {
+                        skills[i].children[j].description = parseInt(skills[i].children[j].description) + amount
+                        break
+                    }
+
+                    if (skills[i].children[j].children.length > 0) {
+                        for (let k = 0; k < skills[i].children[j].children.length; k++) {
+                            if (skills[i].children[j].children[k].name === name) {
+                                skills[i].children[j].children[k].description = parseInt(skills[i].children[j].children[k].description) + amount
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        this.setState({ skills: skills })
+        this.save();
+    }
+
     createProject = (name, important) => {
         let projects = this.state.projects
         projects.push({ name: name, important: important, tasks: [], finishedTasks: [], archivedTasks: [] })
@@ -45,13 +86,12 @@ class ProjectsView extends React.Component {
         this.save();
     }
 
-    editProject = (name, important) => {
+    editProject = (name) => {
         let projects = this.state.projects
 
         for (let i = 0; i < projects.length; i++) {
             if (projects[i].name === this.state.selectedProject.name) {
                 projects[i].name = name
-                projects[i].important = important
 
                 for (let j = 0; j < projects[i].tasks.length; j++) {
                     projects[i].tasks[j].projectName = name
@@ -67,28 +107,13 @@ class ProjectsView extends React.Component {
             }
         }
 
-        this.setState({ projects: projects })
+        this.setState({ projects: projects, importantProjects: this.onlyGetImportant(projects) })
         this.save()
         this.handleEditProjectModal(false)
     }
 
-    moveProject = (project, swapIndex) => {
-        let projects = this.state.projects
-        for (let i = 0; i < projects.length; i++) {
-            if (projects[i].name === project.name) {
-                let temp = projects[i]
-                projects[i] = projects[i + swapIndex]
-                projects[i + swapIndex] = temp
-                break
-            }
-        }
-
-        this.setState({ projects: projects });
-        this.save();
-    }
-
     getEmptyProject = () => {
-        return { name: "", important: false }
+        return { name: "" }
     }
 
     getEmptyTask = () => {
@@ -116,6 +141,8 @@ class ProjectsView extends React.Component {
         this.setState({ projects: projects });
         this.handleNewTaskModal(false);
         this.save();
+        this.getDailyTasks()
+        this.getWeeklyTasks()
     }
 
     editTask = (name, estimatedHours, dueDate, important, daily, weekly) => {
@@ -141,6 +168,8 @@ class ProjectsView extends React.Component {
         this.setState({ projects: projects });
         this.save();
         this.handleEditTaskModal(false)
+        this.getDailyTasks()
+        this.getWeeklyTasks()
     }
 
     finishTask = (task) => {
@@ -160,6 +189,8 @@ class ProjectsView extends React.Component {
 
         this.setState({ projects: projects });
         this.save();
+        this.getDailyTasks()
+        this.getWeeklyTasks()
     }
 
     deleteTask = (task) => {
@@ -178,6 +209,8 @@ class ProjectsView extends React.Component {
 
         this.setState({ projects: projects });
         this.save();
+        this.getDailyTasks()
+        this.getWeeklyTasks()
     }
 
     deleteProject = (project) => {
@@ -196,6 +229,7 @@ class ProjectsView extends React.Component {
 
     save = () => {
         localStorage.setItem("projects", JSON.stringify(this.state.projects));
+        localStorage.setItem("skills", JSON.stringify(this.state.skills));
     }
 
     load = () => {
@@ -204,7 +238,24 @@ class ProjectsView extends React.Component {
             projects = []
         }
 
-        this.setState({ projects: projects })
+        let skills = JSON.parse(localStorage.getItem("skills"))
+        if (skills === null || skills === undefined) {
+            skills = []
+        }
+
+        this.setState({ projects: projects, importantProjects: this.onlyGetImportant(projects), skills: skills })
+    }
+
+    onlyGetImportant = (projects) => {
+        let importants = []
+
+        for (let i = 0; i < projects.length; i++) {
+            if (projects[i].important) {
+                importants.push(projects[i])
+            }
+        }
+
+        return importants
     }
 
     // #endregion
@@ -254,6 +305,40 @@ class ProjectsView extends React.Component {
 
     // #region Render Functions
 
+    getDailyTasks = () => {
+        let projects = this.state.projects
+        let dailyTasks = []
+
+        for (let i = 0; i < projects.length; i++) {
+            for (let j = 0; j < projects[i].tasks.length; j++) {
+                if (projects[i].tasks[j].daily) {
+                    dailyTasks.push(projects[i].tasks[j])
+                }
+            }
+        }
+
+        this.setState({
+            daily: dailyTasks,
+        })
+    }
+
+    getWeeklyTasks = () => {
+        let projects = this.state.projects
+        let weeklyTasks = []
+
+        for (let i = 0; i < projects.length; i++) {
+            for (let j = 0; j < projects[i].tasks.length; j++) {
+                if (projects[i].tasks[j].weekly) {
+                    weeklyTasks.push(projects[i].tasks[j])
+                }
+            }
+        }
+
+        this.setState({
+            weekly: weeklyTasks,
+        })
+    }
+
     render() {
         return (
             <Layout>
@@ -261,10 +346,38 @@ class ProjectsView extends React.Component {
                 <KeyboardEventHandler handleKeys={['2']} onKeyEvent={(key, e) => window.location.assign("/projects")} />
                 <KeyboardEventHandler handleKeys={['3']} onKeyEvent={(key, e) => window.location.assign("/skills")} />
 
-                <KeyboardEventHandler handleKeys={['p', 'P']} onKeyEvent={(key, e) => this.handleNewProjectModal(true)} />
+                <Content style={{ height: "500px" }}>
+                    <HalfScreen
+                        title={"TODAY"}
+                        backgroundColor={"#f1de58"}
+                        tasks={this.state.daily}
+
+                        finishTask={this.finishTask}
+                        deleteTask={this.deleteTask}
+                        handleEditTaskModal={this.handleEditTaskModal}
+                    />
+
+                    <HalfScreen
+                        title={"THIS WEEK"}
+                        backgroundColor={"#f19858"}
+                        tasks={this.state.weekly}
+
+                        finishTask={this.finishTask}
+                        deleteTask={this.deleteTask}
+                        handleEditTaskModal={this.handleEditTaskModal}
+                    />
+                </Content>
 
                 <Content style={{ height: "100%", backgroundColor: "rgb(148, 67, 255)" }}>
                     {this.renderProjects()}
+                </Content>
+
+                <Content style={{ height: "100%", backgroundColor: "rgb(148, 67, 255)" }}>
+                    <Text style={{ fontFamily: "Fjalla One", color: "white", fontSize: "38px" }}>SKILLS</Text>
+                    <FraniTree
+                        data={this.state.skills}
+                        update={this.updateSkill}
+                    />
                 </Content>
 
                 <ProjectModal
@@ -304,8 +417,8 @@ class ProjectsView extends React.Component {
 
     renderProjects = () => {
         return (
-            this.state.projects.map((project, i) => (
-                <ProjectCard
+            this.state.importantProjects.map((project, i) => (
+                <SmallProjectCard
                     key={i}
                     project={project}
 
@@ -314,7 +427,6 @@ class ProjectsView extends React.Component {
                     handleEditTaskModal={this.handleEditTaskModal}
 
                     editProject={this.editProject}
-                    moveProject={this.moveProject}
                     deleteProject={this.deleteProject}
 
                     finishTask={this.finishTask}
@@ -328,4 +440,4 @@ class ProjectsView extends React.Component {
     // #endregion
 }
 
-export default ProjectsView;
+export default DashboardView;

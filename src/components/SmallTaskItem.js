@@ -4,7 +4,7 @@ import moment from 'moment'
 
 const { Text } = Typography
 
-class TaskItem extends React.Component {
+class SmallTaskItem extends React.Component {
     constructor(props) {
         super(props)
     }
@@ -19,7 +19,7 @@ class TaskItem extends React.Component {
 
     render() {
         return (
-            <div class="frani-task-item-main" style={{ color: this.props.task.important ? "#ffeb00" : this.props.black ? "black" : "white" }}>
+            <div class="frani-small-task-item-main" style={{ color: this.props.task.important ? "#ffeb00" : this.props.black ? "black" : "white" }}>
                 {this.dueDateWarning(this.props.task) &&
                     <Icon
                         type="warning"
@@ -36,7 +36,7 @@ class TaskItem extends React.Component {
                 <Text style={{ color: this.props.task.important ? "#ffeb00" : this.props.black ? "black" : "white", cursor: "pointer" }} onClick={() => this.props.handleEditTaskModal(true, this.props.task)}>
                     {this.props.task.name.substring(0, 28)}
                 </Text>
-                <div class="frani-task-item-hours">
+                <div class="frani-small-task-item-hours">
                     {this.props.task.estimatedHours}hs
                     <Icon
                         type="check"
@@ -54,4 +54,4 @@ class TaskItem extends React.Component {
     }
 }
 
-export default TaskItem
+export default SmallTaskItem

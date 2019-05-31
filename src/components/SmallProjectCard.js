@@ -3,7 +3,7 @@ import { Icon, List, Typography } from 'antd';
 import moment from 'moment'
 import ProjectModal from './ProjectModal'
 import TaskModal from './TaskModal'
-import TaskItem from './TaskItem'
+import SmallTaskItem from './SmallTaskItem'
 
 const { Text } = Typography;
 
@@ -11,7 +11,7 @@ const INITIAL_STATE = {
     selectedTask: {},
 }
 
-class ProjectCard extends React.Component {
+class SmallProjectCard extends React.Component {
     constructor(props) {
         super(props)
         this.state = INITIAL_STATE
@@ -52,11 +52,11 @@ class ProjectCard extends React.Component {
 
     render() {
         return (
-            <div data-simplebar class="frani-project-card-main">
+            <div data-simplebar class="frani-small-project-card-main">
                 <List
                     size="small"
                     header={
-                        <div class="frani-project-card-header">
+                        <div class="frani-small-project-card-header">
                             <Text onClick={() => this.props.handleEditProjectModal(true, this.props.project)} style={{ color: "white", cursor: "pointer" }}>
                                 {this.props.project.name.toUpperCase().substring(0, 15)}
                             </Text>
@@ -68,13 +68,13 @@ class ProjectCard extends React.Component {
                             <Icon
                                 type="cross"
                                 onClick={() => this.props.deleteProject(this.props.project)}
-                                style={{ color: '#f32e2e', float: "right", marginTop: "18px", marginRight: "12px", cursor: "pointer", fontSize: '24px' }}
+                                style={{ color: '#f32e2e', float: "right", marginTop: "10px", marginRight: "12px", cursor: "pointer", fontSize: '24px' }}
                             />
                         </ div>
                     }
                     dataSource={this.props.project.tasks}
                     renderItem={task => (
-                        <TaskItem
+                        <SmallTaskItem
                             task={task}
                             finishTask={this.props.finishTask}
                             deleteTask={this.props.deleteTask}
@@ -83,7 +83,7 @@ class ProjectCard extends React.Component {
                     )}
                     footer={
                         <div
-                            class="frani-project-card-footer"
+                            class="frani-small-project-card-footer"
                             style={{
                                 borderTop: "solid " + this.getPercentageColor(this.props.project),
                                 borderBottom: "solid " + this.getPercentageColor(this.props.project)
@@ -109,4 +109,4 @@ class ProjectCard extends React.Component {
     }
 }
 
-export default ProjectCard;
+export default SmallProjectCard;

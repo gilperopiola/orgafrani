@@ -5,9 +5,9 @@ export function RedToGreen(value, max) {
     let green = "#4CF000"
 
     let result = value / max
-    if (result < 0.18) {
+    if (result < 0.23) {
         return red
-    } else if (result < 0.45) {
+    } else if (result < 0.50) {
         return orange
     } else if (result < 0.70) {
         return yellow

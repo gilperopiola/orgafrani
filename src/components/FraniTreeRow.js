@@ -16,24 +16,47 @@ class FraniTreeRow extends React.Component {
 
     render() {
         return (
-            <div style={{
-                width: "50%",
-                height: "70px",
-                backgroundColor: "#491a92",
-                color: "white",
-                fontFamily: "Fjalla One",
-                fontSize: "36px",
-                textAlign: "left",
-            }}>
-                {this.props.statusBar &&
-                    <div style={{ width: "6px", backgroundColor: RedToGreen(parseInt(this.props.description), 100), height: "100%", position: "relative", float: "left" }} />
-                }
+            <div>
+                <div class="frani-tree-row-main">
+                    {this.props.statusBar &&
+                        <div class="frani-tree-row-status-bar-left" style={{ backgroundColor: RedToGreen(parseInt(this.props.description), 100) }} />
+                    }
+                    <div class="frani-tree-row-step" style={{ width: this.props.level * 36 + "px" }} />
+                    <div class="frani-tree-row-name"> {this.props.name} </div>
 
-                <div style={{ width: this.props.level * 24 + "px", backgroundColor: "#210748", display: "inline-block", height: "100%", position: "relative", float: "left" }} />
+                    <Icon
+                        type="plus"
+                        style={{
+                            color: "white",
+                            position: "relative",
+                            float: "right",
+                            cursor: "pointer",
+                            marginTop: "14px",
+                            marginRight: "14px",
+                        }}
+                        onClick={() => this.props.update(this.props.name, 1)}
+                    />
+                    <div class="frani-tree-row-description">{this.props.description}</div>
+                    <Icon
+                        type="minus"
+                        style={{
+                            color: "white",
+                            position: "relative",
+                            float: "right",
+                            cursor: "pointer",
+                            marginTop: "14px",
+                            marginRight: "14px",
+                        }}
+                        onClick={() => this.props.update(this.props.name, -1)}
+                    />
+                </div>
 
-                <div style={{ paddingLeft: "14px", display: "inline-block", verticalAlign: "sub" }}> {this.props.name} </div>
-
-                <div style={{ position: "relative", float: "right", marginRight: "14px", marginTop: "8px" }}>{this.props.description}</div>
+                <div class="frani-tree-row-status-bar-right">
+                    <div class="frani-tree-row-status-bar-right-2" style={{
+                        width: parseInt(this.props.description) * 2 + "px",
+                        backgroundColor: RedToGreen(parseInt(this.props.description), 100),
+                    }} />
+                </div>
             </div>
         )
     }
